@@ -1,0 +1,82 @@
+Q1:
+FBUFF: Instruction(32)
+DBUFF: Decoded Ry(32), Decoded Rx(32), Opcode(4), SEXT Offset(32)
+EBUFF: Decoded Rx(32), ALU Output(32), Opcode(4)
+MBUFF: Opcode(4)
+
+Q2:
+a)
+2 + 3 * 5 + 4 + 1 + 4 = 26 clock cycles to finish
+2 + 3 * 4 + 1 = 15 instructions
+CPI = 26/15 = 1.73
+
+b)
+2 + 5 * 3 + 3 + 1 + 4 = 25 clock cycles to finish
+2 + 3 * 4 + 1 = 15 instructions
+CPI = 25/15 = 1.67
+
+Q3:
+a) The benefit of a deeper pipeline is that we can deal with more complex operations more efficiently. With the addition of caches and faster clock cycle times, it becomes necessary to break operations into multiple stages, creating a deeper pipeline.
+
+b) 4 bubbles. Because we have mispredicted, the instructions currently in all the stages before execute are incorrect. Therefore, we need to flush the earlier stages. Because there are 4 stages before execute there will be	4 spaces in between the branch instruction and the next correct instruction entering fetch.
+
+c) With more phases in the pipeline, data hazards that occur, such as RAW, may produce more bubbles in the pipeline since there are simply more phases in between the stalled instruction and the phase that solves it.
+
+Q4:
+a)
+	I1	I2	I3	I4
+I1	X	X	X	X
+I2 RAW/WAR	X	X	X	
+I3	WAR		X	X
+I4	WAW WAR/RAW	RAW	X
+
+b) 6 bubbles. Here we only need to worry about the RAW data hazards. The first is between I1 and I2. To make sure $t0 has the correct data, I1 must complete the WB stage before I2 does execute. We need three bubbles to ensure this. The second RAW is between I3 and I4. Again, to make sure $t2 has correct data, I3 must complete WB before I4 gets to execute. We need another three bubbles to ensure this.
+
+c) 1 bubble. Again we look only at the RAW data hazards. With data forwarding, the RAW between I1 and I2 is solved without bubbles because we can forward ALU outputs to the previous stage. However, between LW and ADD there is still a bubble because LW will update $t0 upon WB meaning the next instruction should be at execute when that happens. This introduces a single bubble.
+
+Q5:
+a) The instruction at location 1200.
+
+b) The instructions in the IF and ID/RR phases will be flushed and replaced by NOPs as a result of misprediction. Instructions starting at 1001 will then start getting pushed into the pipeline.
+
+Q6:
+a) The algorithm is STRF. This is why we see P1 go first because its CPU bursts are the lowest of the three and P2 finish late because its CPU bursts are the highest. Its also why we see P1 interrupt P2 at time 7.
+
+b) P3 is picked at time 10 because at this point, P1 has finished, P3's CPU burst has 3 time units, and P2 has 4 time units left in its CPU burst. STRF is a preemptive algorithm so it interrupts P2 and switches to P3 because P3 has less time remaining.
+
+c) 10. Wait time equals the total time it takes the process to finish upon entering minus the total time its working. P2 ends after time 23 and works for 13 time units.
+
+d) 12. Turnaround time is the time it takes a process to finish after entering. P3 enters at time 1 and is done after time 12.
+
+Q7:
+a)
+wt_p1 = finishtime - worktime = 38 - (10 + 2 + 15) = 11
+wt_p2 = finishtime - worktime = 30 - (4 + 2 + 3) = 21
+wt_p3 = finishtime - worktime = 33 - (3 + 2 + 3) = 25
+avg_wt = (wt_p1 + wt_p2 + wt_p3) / 3 = (11 + 21 + 25) / 3 = 19
+
+b)
+wt_p1 = finishtime - worktime = 38 - (10 + 2 + 15) = 11
+wt_p2 = finishtime - worktime = 20 - (4 + 2 + 3) = 11
+wt_p3 = finishtime - worktime = 23 - (3 + 2 + 3) = 15
+avg_wt = (wt_p1 + wt_p2 + wt_p3) / 3 = (11 + 11 + 15) / 3 = 12.33
+
+c)
+wt_p1 = finishtime - worktime + overhead = 38 - (10 + 2 + 15) + 12 = 23
+wt_p2 = finishtime - worktime + overhead = 30 - (4 + 2 + 3) + 8 = 29
+wt_p3 = finishtime - worktime + overhead = 33 - (3 + 2 + 3) + 10 = 35
+avg_wt = (wt_p1 + wt_p2 + wt_p3) / 3 = (23 + 29 + 35) / 3 = 29
+
+wt_p1 = finishtime - worktime + overhead = 38 - (10 + 2 + 15) + 16 = 27
+wt_p2 = finishtime - worktime + overhead = 20 - (4 + 2 + 3) + 8 = 19
+wt_p3 = finishtime - worktime + overhead = 23 - (3 + 2 + 3) + 10 = 25
+avg_wt = (wt_p1 + wt_p2 + wt_p3) / 3 = (27 + 19 + 25) / 3 = 23.67
+
+d) Shorter timeslices will often reduce the waiting time of short CPI burst processes because they don't allow longer processes to hog the CPU and allow short processes to complete their short CPU bursts and IO quicker.
+
+e) Scheduling and overhead will a larger negative impact on short processes because this means that we will switch processes more often and we will incur more of the delay penalties.
+
+Q8:
+a) Because process A takes precedence over process B, if process A has a very long CPU burst, it could starve process B. Since B will have to wait for A and will be interrupted by A as well.
+
+b) A round robin policy would prevent starving. This is because in round robin, each process gets a timeslice to run on the processor. This means that no long running process can hog the CPU.

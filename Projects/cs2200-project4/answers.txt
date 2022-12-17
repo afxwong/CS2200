@@ -1,0 +1,45 @@
+CS 2200 Spring 2021
+Project 4
+
+Name: Anthony Wong
+GT Username: awong307
+
+Problem 1C (FCFS Scheduler)
+----------
+1 CPU: 67.9s
+2 CPUs: 40.3s
+4 CPUs: 38.0s
+
+There is not a linear relationship. This is because, if we keep increasing the number avaliable CPUs, at some point the bottleneck
+for execution time won't be wait time anymore but instead the actual runtime of the processes. At 4 CPUs, there is very little total
+wait time meaning that most of the time, if a process needs a CPU it will get one immediately. Adding more CPUs can not decrease the
+time it takes to run a process.
+
+Problem 2B (Round-Robin)
+----------
+800ms: 318.9s
+600ms: 302.5s
+400ms: 291.7s
+200ms: 280.6s
+
+There is a relationship between timeslice and wait time. As the timeslice gets shorter, wait time decreases. In a real OS, the shortest
+timeslice possible is not usually the best choice because of context-switching overhead, which is the time taken to swap a new process
+in to be run by the CPU. As we choose shorter and shorter timeslices, we begin to spend a larger proportion of our execution time
+swapping processes and incurring the time penalties from overhead. At some point we spend less time doing real work and more time swapping.
+This is also called thrashing.
+
+Problem 3B (Round-Robin)
+----------
+To mitigate starvation in a priority scheduler, operating systems can implement a system where processes that have waited for a long time
+gradually get their priority raised. At some point if its been waiting for a long enough, its priority will get raised high enough such
+that it gets chosen.
+
+Problem 4 (The Priority Inversion Problem)
+---------
+One way to make sure P1 can finish it’s execution before any of the medium priority processes is for each a process to keep track of the
+processes that depend on it and also to check if any of those processes are in the queue. If a process has processes in the queue that
+depend upon it, and one of those processes has a priority that is higher than it, then the "parent" process can have its priority raised
+to the max of its "children". This way we won't starve the "parent" process because its priority has been raised and we also won't starve
+high priority processes that depend on it. In this case specifically, the window manager will notice that P1 is a high priority process 
+that depends on it and that it wants to assert itself. Then, the window manager will have its priority raised to the level of P1. This
+means that the window manager will run before the medium priority processes and P1 will not be starved.

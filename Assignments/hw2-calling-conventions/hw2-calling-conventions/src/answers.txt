@@ -1,0 +1,18 @@
+CS 2200 Spring 2021
+Homework 2
+
+Name: Anthony Wong
+GT Username: awong307
+
+Question 1
+----------
+
+lea $ra, 1
+br target
+
+When we are at the lea instruction, the PC is pointing at the "br target" line.
+Because I want to prevent infinite looping, I want to make sure that $ra
+is pointing at the line below "br target". This is why I have an offset of 1.
+Once the storing of $ra is done, the PC next intruction to be executed is "br target".
+This is an unconditional branch that makes sure that we always branch to the address of the target label,
+thus mimicing the behavior of JALR.

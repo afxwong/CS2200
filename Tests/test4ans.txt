@@ -1,0 +1,88 @@
+Q1:
+a) 
+  i) 17, 14, 8, 0, 48, 56, 91, 168, 249
+     Moves 47 cylinders to 0 and services 3 requests = 47M + 3C
+     Then moves 56 cylinders and services 2 requests including R5 = 56M + 2C
+     Time to service R5 = 103M + 5C
+  ii) 17, 14, 8, 48, 56, 91, 168
+     Moves 39 cylinders to 8 and services 3 requests = 39M + 3C
+     Then moves from 8 to 56 servicing 2 requests = 48M + 2C
+     Time to service R5 = 87M + 5C
+b) # of sectors * (seek time + avg rotational latency + time to read 1 sector)
+   avg rotational latency = (1 / rotational speed) / 2 = (1 / 7500) / 2 = 4ms
+   time to read 1 sector = (1 / rotational speed) / sectors per track = 8ms / 1024 = .00781ms
+   = 7 * (18 + 4 + .00781) = 154.005ms
+
+Q2:
+a) The issue is that when bar() executes, it can grab a changed value of curr which has been altered by foo() by another thread which will result in it returning the wrong value. This is clearly not the intention of the program and is called a race condition.
+b) In its program, foo() acquires the mutex lock. While it has the mutex lock, it calls bar() which wants to acquire the mutex lock. Because foo() will never release its lock until bar() finishes, which needs the lock, nothing will execute. This is called deadlock. The thread is waiting on an event which will never happen.
+c) I would simply move the calling of bar() in foo() outside of the locking section. This way we don't deadlock but preserve correct values/eliminating data races.
+
+Q3:
+a) touchf1, yes, 0, 1
+   touchf2, yes, 0, 1
+   ln-sf1f2, yes, 0, 1
+   catf3, no, 1, 1
+   cpf2f4, yes, 0, 1
+   rmf2, no, 1, 0
+b) Both create aliases for f1 named f2. However, the former creates a soft link whereas the latter creates a hard link. A hard link points directly to the data with the same i-node, whereas the soft link has a new i-node and points to f1. A hard link would be better in certain situations if you want to ensure that the data isn’t deleted when f1 is deleted.
+c) pointers in block = size of index block / size of pointer = 256 / 16 = 16
+   data blocks = direct pointers + single indirect pointers + double indirect pointers = 1 + 16 + 16^2 = 273
+   max file size = data blocks * size of data block = 273 * 2048 = 559104 bytes
+
+Q4:
+a)
+1: T3
+2: T5
+3: N/A
+4: T4
+5: T7
+6: N/A
+7: T2
+8: T8
+9: N/A
+10: T6
+11: T2
+12: N/A
+
+b)
+T1: 1
+T2: 3, 2
+T3: 2
+T4: 2
+T5: 3
+T6: 2
+T7: 3
+T8: 3
+
+Q5:
+i)
+   a) ii
+   b) iii
+ii)
+   a) ii
+   b) i
+iii)
+   a) iv
+   b) i
+
+Q6:
+   a) The transport layer is used to deal with packetizing and packet loss. There can be packet loss or packet corruption en route to the next destination. Even if there is no collision, there can be loss of data which the transport layer is used to fix. Ethernet only helps fix collision errors and not other packet loss/corruption issues.
+   b) Since N3 and N5 are in the same collision domain, they will experience a collision of their packets. However, the rest are in different collision domains and the 4-port switch will prevent collision so those packets are fine.
+
+Q7:
+a) as per test
+b) 
+   i) payload = total bytes - header components = 1590 - (4 * 7 + 16 * 2 + 6 * 2) = 1590 - 28 - 32 - 12 = 1518
+   ii) # of packets = total file size (bytes) / payload = 97152 / 1518 = 64 packets
+c) 
+   Total Packets to Be Sent = 1000/0.8 = 1250 packets
+   RTT = 1 ms + 2 ms + 2(0.2 + (7km / (2.5 * 10^2 km/ms)) = 3.456 ms
+   Total Time = 1250 packets / 10 packets/window * 3.456 ms = 432 ms
+
+
+
+
+
+
+ 

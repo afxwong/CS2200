@@ -1,0 +1,61 @@
+Q1:
+a) Internal Fragmentation = 4503 bytes
+b) It is not possible to insert P5. In order to insert this process, we need a contiguous block of memory of 4001 bytes. Though we have enough free space in total, there does not exists a contiguous block of memory of at least this size. Therefore, we cannot place it.
+c) A paged virtual memory system and decreased page size can minimize both external and internal fragmentation. Paging gets around external fragmentation by decoupling the user's view from physical memory and giving the user a view of virtual contiguous memory. We will still have internal fragmentation but the small size of each page table will minimize this.
+d) This behavior is not correct. The approach described is static relocation. However, in static relocation, memory can be swapped in and out but never to a new location. The behavior described changes memory locations after the IO swap.
+
+Q2:
+DCache Read = mem ratio * read ratio * (L1 access time + L1 miss ratio(L2 access time + (L2 miss ratio * memory read latency)))
+= .2 * .7 * (2 + 0.25(40 + 0.15(120)) = 2.31
+DCache Write = mem ratio * write ratio * (L1 access time + L2 access time + memory write latency) = .2 * .3 * (2 + 40 + 6) = 2.88
+ICache = .01(120) = 1.2
+Effective CPI = Avg CPI + ICache + DCache Read + DCache Write = 1.2 + 1.2 + 2.31 + 2.88 = 7.59
+
+Q3:
+a) We need a scheme in deciding what cache to modify in the case of a miss for n-way set associative, namely LRU. 256-way set associative means that we have 256! LRU states and log2(256!) bits to store this info for each cache set. Such a large n means introduces too much complexity with tracking states and parallel tag matching. It becomes infeasible.
+b) This is an improvement because we only need to keep track of 4! LRU states. This also requires much less hardware and we can more quickly check if something exists in cache.
+c) This describes direct-mapped cache. It will not perform as well because we will encounter more conflict misses, given that each set only consists of one block. Any tag that does not match the tag at a given index will cause a conflict miss.
+
+Q4:
+a) (10, 1), (12, 0), (8, 0), (4, 1), (100, 1, curr), (14, 1)
+b) (10, 0), (13, 1), (8, 0, curr), (4, 1), (100, 0), (14, 0)
+c) (10, 0), (13, 1), (8, 1, curr), (4, 1), (100, 0), (14, 0)
+d) (10, 0), (13, 1), (8, 0), (4, 0), (25, 1), (14, 0, curr)
+e) (10, 1), (13, 1), (8, 1), (4, 1), (25, 1), (14, 1, curr)
+   
+   At this point, we would rather implement FIFO replacement. Because all the reference bits are set for second chance replacement, we would have to traverse the whole queue before finding a page to evict. This would be less effecient at this point compared to FIFO where we would evict at the head immediately.
+
+Q5:
+a) # of indexes = totalcachesize / (associativity * blocksize) = 1024kb / (64b * 256b) = 64
+b) 
+   i) offset bits = log2(blocksize) = log2(256) = 8
+   ii) index bits = log2(totalcachesize / (associativity * blocksize)) = log2(64) = 6
+   iii) 32 - 8 - 6 = 18
+c) 6
+d) 1 dirty bit per word = blocksize / wordsize = 64
+e) bits per entry = 1 (valid) + 64 (dirty) + 18 (tag) + 2048 (data) = 2131 bits
+   bits in all blocks = bits per entry * cache dimensions + MRU = (2131 * 64 * 64) + (6 * 64) = 8728960
+   total bytes = bits in all blocks / 8 = 8728960 / 8 = 1091120 bytes
+f) 64 18-bit tag comparators
+
+Q6:
+a) Because the VPN 22 is in the TLB and the valid bit is 1, we have a TLB hit. PFN 300 is retrieved.
+b) Because the VPN 40 in the TLB is a kernal process, it is a miss. We then go to the page table and get the entry for VPN 40 from there. It is valid so we retrieve PFN 42. The mapping is then placed in the TLB.
+c) VPN 17 is not in the TLB so it is a miss. We find VPN 17 in the page table but it is invalid. This causes a page fault. A free frame is found and the page table is updated with the new frame. We then continue the process with the new PFN and the new mapping is placed in the TLB.
+d) VPN 1 is in the TLB but it is invalid. We find VPN 1 in the page table but it is invalid. This causes a page fault. A free frame is found and the page table is updated with the new frame. We then continue the process with the new PFN and the new mapping is updated in the TLB.
+
+Q7:
+a)
+   i) 51
+   ii) 19
+   iii) 2^51
+   iv) 2^19
+b) pros - With a larger page we will be able to have more mappings for each process which means we will page fault and go to memory less
+   cons - Larger pages mean more internal fragmentation/the potential for unused space within the page. This hinders the idea of paging.
+c) 
+   a) per-process
+   b) system-wide
+   c) The disk map stores swapped-out pages. When we have a VPN that is not in the page table, we use the diskmap to bring in the corresponding data.
+   d) per-process
+   e) The freelist holds the free physical frames that will host pages from the disk in the event of a page fault.
+   f) system-wide 
